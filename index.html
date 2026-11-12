@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#172554">
+<meta name="description" content="15問でわかる、あらさん式・あなたの恋愛観診断。恋愛、自由、信頼、相棒との距離感をチェック。">
+<title>あらさん式・あなたの恋愛観診断</title>
+<style>
+:root{--navy:#172554;--blue:#2563eb;--ink:#172033;--muted:#64748b;--line:#e2e8f0;--paper:#f8fafc;--green:#15803d}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#eff6ff 0,#f8fafc 340px);font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;color:var(--ink);line-height:1.65}
+.wrap{width:min(720px,calc(100% - 28px));margin:32px auto 56px}
+header{background:var(--navy);color:white;padding:30px 26px;border-radius:22px 22px 0 0}
+.kicker{font-size:.78rem;letter-spacing:.12em;color:#bfdbfe;font-weight:700}
+h1{font-size:clamp(1.65rem,5vw,2.35rem);line-height:1.25;margin:8px 0 12px}
+header p{margin:0;color:#dbeafe}
+main{background:white;border:1px solid var(--line);border-top:0;border-radius:0 0 22px 22px;padding:clamp(18px,4vw,30px);box-shadow:0 16px 40px #0f172a12}
+.intro h2,.result h2{margin:0 0 8px;font-size:1.25rem}
+.intro ul{padding-left:1.25rem;margin:10px 0 20px}
+.note{font-size:.88rem;color:var(--muted)}
+button{font:inherit;cursor:pointer;border:0;border-radius:12px;padding:12px 18px;font-weight:700}
+.primary{background:var(--blue);color:white}.secondary{background:#e2e8f0;color:var(--ink)}
+button:disabled{opacity:.4;cursor:not-allowed}
+.progressrow{display:flex;justify-content:space-between;color:var(--muted);font-size:.82rem;margin-bottom:8px}
+.track{height:8px;background:#e2e8f0;border-radius:99px;overflow:hidden;margin-bottom:24px}
+.fill{height:100%;background:var(--green);width:0;transition:width .2s}
+.question{font-size:1.28rem;font-weight:800;margin:0 0 18px}
+.answers{display:grid;gap:10px}
+.answer{display:flex;align-items:flex-start;gap:10px;border:1px solid var(--line);border-radius:13px;padding:13px;background:white;cursor:pointer}
+.answer:has(input:checked){border-color:var(--blue);background:#eff6ff}
+.answer input{margin-top:5px;accent-color:var(--blue);width:18px;height:18px;flex:none}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:22px}
+.hidden{display:none!important}
+.pill{display:inline-block;border-radius:99px;background:#dcfce7;color:#166534;font-size:.8rem;font-weight:800;padding:5px 10px}
+.type{font-size:1.7rem;color:var(--green);font-weight:900;margin:4px 0}
+.sub{font-size:1.05rem;font-weight:700;margin:0 0 12px}
+.resultcard{background:#f8fafc;border:1px solid var(--line);border-radius:16px;padding:18px;margin:18px 0}
+.score{margin:12px 0}.scoreline{display:flex;justify-content:space-between;font-size:.9rem;margin-bottom:5px}
+.bar{height:9px;background:#e2e8f0;border-radius:99px;overflow:hidden}.bar span{display:block;height:100%;background:#94a3b8}
+.bar span.top{background:var(--green)}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+footer{text-align:center;color:var(--muted);font-size:.78rem;padding:18px}
+a{color:var(--blue)}
+@media(max-width:480px){.wrap{margin:14px auto 30px}header{padding:24px 20px}.nav button,.actions button{flex:1}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+ <div class="kicker">ARASAN STYLE · PERSONALITY CHECK</div>
+ <h1>あらさん式・あなたの恋愛観診断</h1>
+ <p>恋愛だけが、愛情の形じゃない。15問で、あなたが心地よいと感じる関係をチェック。</p>
+</header>
+<main>
+<section id="intro" class="intro">
+ <span class="pill">全15問・無料</span>
+ <h2>あなたの恋愛観を診断します</h2>
+ <p>直感で選んでください。正解・不正解はありません。</p>
+ <ul><li>あなたの恋愛スタイル</li><li>理想のパートナー像</li><li>自由と束縛のバランス</li><li>長続きする関係のヒント</li></ul>
+ <p class="note">※診断結果は回答傾向をもとにしたエンタメコンテンツです。</p>
+ <button class="primary" id="start">診断を始める</button>
+</section>
+<section id="quiz" class="hidden" aria-live="polite">
+ <div class="progressrow"><span id="counter">QUESTION 1 / 15</span><span id="percent">7%</span></div>
+ <div class="track"><div class="fill" id="progress"></div></div>
+ <h2 class="question" id="question"></h2>
+ <div class="answers" id="answers"></div>
+ <div class="nav"><button class="secondary" id="back">戻る</button><button class="primary" id="next" disabled>次へ</button></div>
+</section>
+<section id="result" class="result hidden" aria-live="polite">
+ <span class="pill">診断完了</span>
+ <h2>あなたの恋愛タイプは…</h2>
+ <div class="type" id="type"></div>
+ <p class="sub" id="subtitle"></p>
+ <p id="description"></p>
+ <div class="resultcard">
+  <strong>あなたの傾向スコア</strong>
+  <div id="scores"></div>
+ </div>
+ <h3>あなたの強み</h3><p id="strength"></p>
+ <h3>恋愛で意識したいこと</h3><p id="caution"></p>
+ <div class="actions">
+  <button class="primary" id="share">Xで結果をシェア</button>
+  <button class="secondary" id="copy">結果をコピー</button>
+  <button class="secondary" id="retry">もう一度診断</button>
+ </div>
+ <p class="note">シェア文に診断ページのURLが自動で入ります。</p>
+</section>
+</main>
+<footer>あらさん式・あなたの恋愛観診断</footer>
+</div>
+<script>
+const types={
+ "相棒型":{sub:"人生を一緒に楽しむパートナー",desc:"恋人である前に、人間として気が合うことを重視するタイプ。一緒に笑い、遊び、困ったときには支え合う。友情と愛情の両方を大切にします。",good:"一緒にいる居心地の良さ、対等な信頼関係。",care:"楽しさを優先しすぎて、愛情表現が不足しないように。"},
+ "愛情表現型":{sub:"愛情を言葉と行動で伝えるタイプ",desc:"好きな人には好きと伝え、特別な存在として大切にしたいタイプ。愛情を確認し合うことで関係が深まります。",good:"気持ちが伝わりやすく、愛情深い。",care:"相手にも同じ表現を求めすぎないこと。"},
+ "自由尊重型":{sub:"自立と自由を大切にするタイプ",desc:"恋人同士でもそれぞれの人生を大切にしたいタイプ。束縛より信頼を重視し、適度な距離感を保ちます。",good:"依存しすぎず、お互いを尊重できる。",care:"相手が寂しさを感じていないか、時々確認すること。"},
+ "安心安定型":{sub:"信頼と居心地を大切にするタイプ",desc:"一緒にいて安心できることが重要。派手な刺激より、日々の積み重ねと誠実な関係を求めます。",good:"相手に安心感を与え、関係を丁寧に育てられる。",care:"本音を飲み込まず、気持ちを言葉にすること。"},
+ "情熱型":{sub:"好きになったら一直線のタイプ",desc:"自分の気持ちに正直で、好きな人には積極的に向き合うタイプ。行動力と熱量で恋愛を進めます。",good:"積極性があり、愛情が伝わりやすい。",care:"相手のペースや気持ちも大切にすること。"}
+};
+const Q=[
+["好きな人と理想の休日を過ごすなら？",[["二人で出かけて思い切り遊ぶ","相棒型"],["二人きりでゆっくり過ごす","愛情表現型"],["お互い好きなことをして過ごす","自由尊重型"],["何気ない日常を一緒に楽しむ","安心安定型"]]],
+["恋人から3日間連絡がなかったら？",[["特に気にしない","自由尊重型"],["少し寂しいけど待つ","安心安定型"],["自分から連絡する","愛情表現型"],["何かあったのか心配する","安心安定型"]]],
+["異性に一番求めるものは？",[["一緒にいて楽しいこと","相棒型"],["愛情をしっかり感じられること","愛情表現型"],["お互いの自由を尊重すること","自由尊重型"],["安心して素の自分でいられること","安心安定型"]]],
+["好きな人ができたら？",[["自分から積極的に誘う","情熱型"],["相手の反応を見ながら距離を縮める","安心安定型"],["自然な流れに任せる","自由尊重型"],["まず友達として仲良くなる","相棒型"]]],
+["恋人に嫉妬したときは？",[["素直に気持ちを伝える","愛情表現型"],["嫉妬はするが束縛しない","自由尊重型"],["二人で話し合う","安心安定型"],["冗談を交えて伝える","相棒型"]]],
+["理想の関係に近いのは？",[["親友のような恋人","相棒型"],["いつまでも恋人らしい二人","愛情表現型"],["干渉しすぎない二人","自由尊重型"],["何でも話せる家族のような二人","安心安定型"]]],
+["相手が落ち込んでいたら？",[["一緒に外へ連れ出して笑わせる","相棒型"],["そばにいて愛情を伝える","愛情表現型"],["相手が望むまで見守る","自由尊重型"],["話を聞いて一緒に解決策を考える","安心安定型"]]],
+["恋愛で一番嫌なのは？",[["一緒にいて気を遣い続けること","相棒型"],["愛情を感じられないこと","愛情表現型"],["束縛や過度な干渉","自由尊重型"],["嘘や信頼を裏切られること","安心安定型"]]],
+["恋人と意見が食い違ったら？",[["話し合って折り合いをつける","安心安定型"],["その場で素直にぶつかる","情熱型"],["お互いの考えを尊重する","自由尊重型"],["一度笑って落ち着く","相棒型"]]],
+["好きという気持ちは？",[["言葉ではっきり伝えたい","愛情表現型"],["行動で示したい","安心安定型"],["自然に伝わればいい","自由尊重型"],["言葉も行動も両方大切","情熱型"]]],
+["恋人に異性の親友がいても？",[["気にしない","自由尊重型"],["少し気になるが尊重する","安心安定型"],["自分も一緒に仲良くなりたい","相棒型"],["自分との時間も大切にしてほしい","愛情表現型"]]],
+["長く付き合ううえで最も重要なのは？",[["笑いの絶えない関係","相棒型"],["愛情を伝え合うこと","愛情表現型"],["お互いの自由と自立","自由尊重型"],["信頼と安心感","安心安定型"]]],
+["相手が遠くへ引っ越すことになったら？",[["会える方法を積極的に考える","情熱型"],["相手の新しい生活を応援する","自由尊重型"],["二人で今後を相談する","安心安定型"],["離れても友達のように支え合う","相棒型"]]],
+["あなたにとって理想のパートナーは？",[["人生を一緒に楽しむ相棒","相棒型"],["心から愛し合える恋人","愛情表現型"],["自立した対等なパートナー","自由尊重型"],["何があっても安心できる存在","安心安定型"]]],
+["人生の最後まで一緒にいたいと思う相手は？",[["何歳になっても笑い合える人","相棒型"],["ずっと愛情を伝え合える人","愛情表現型"],["お互いの人生を尊重できる人","自由尊重型"],["苦楽を共に乗り越えられる人","安心安定型"]]]
+];
+let index=0,answers=Array(Q.length).fill(null),finalText="";
+const $=id=>document.getElementById(id);
+function show(id){["intro","quiz","result"].forEach(x=>$(x).classList.toggle("hidden",x!==id))}
+function render(){
+ const [q,opts]=Q[index];$("question").textContent=q;$("counter").textContent=`QUESTION ${index+1} / ${Q.length}`;
+ $("percent").textContent=`${Math.round((index+1)/Q.length*100)}%`; $("progress").style.width=`${(index+1)/Q.length*100}%`;
+ $("answers").innerHTML="";
+ opts.forEach(([label,type],n)=>{const lab=document.createElement("label");lab.className="answer";const inp=document.createElement("input");inp.type="radio";inp.name="answer";inp.value=n;inp.checked=answers[index]===n;inp.addEventListener("change",()=>{answers[index]=n;$("next").disabled=false});const span=document.createElement("span");span.textContent=label;lab.append(inp,span);$("answers").append(lab)});
+ $("back").disabled=index===0;$("next").disabled=answers[index]===null;$("next").textContent=index===Q.length-1?"診断結果を見る":"次へ";
+}
+function finish(){
+ const scores=Object.fromEntries(Object.keys(types).map(t=>[t,0]));
+ answers.forEach((a,i)=>scores[Q[i][1][a][1]]++);
+ const sorted=Object.entries(scores).sort((a,b)=>b[1]-a[1]);const winner=sorted[0][0],t=types[winner];
+ $("type").textContent=winner;$("subtitle").textContent=t.sub;$("description").textContent=t.desc;$("strength").textContent=t.good;$("caution").textContent=t.care;
+ $("scores").innerHTML="";
+ sorted.forEach(([name,value],i)=>{const row=document.createElement("div");row.className="score";const line=document.createElement("div");line.className="scoreline";const l=document.createElement("strong"),r=document.createElement("span");l.textContent=name;r.textContent=`${value} / 15`;line.append(l,r);const bar=document.createElement("div");bar.className="bar";const span=document.createElement("span");if(i===0)span.className="top";span.style.width=`${value/15*100}%`;bar.append(span);row.append(line,bar);$("scores").append(row)});
+ finalText=`【あらさん式・あなたの恋愛観診断】\n診断結果：${winner}「${t.sub}」\n${t.desc}\nあなたも診断してみよう！\n${location.href}`;
+ show("result");
+}
+$("start").onclick=()=>{show("quiz");render()};
+$("back").onclick=()=>{if(index>0){index--;render()}};
+$("next").onclick=()=>{if(index<Q.length-1){index++;render()}else finish()};
+$("retry").onclick=()=>{index=0;answers=Array(Q.length).fill(null);show("intro")};
+$("share").onclick=()=>window.open("https://twitter.com/intent/tweet?text="+encodeURIComponent(finalText),"_blank");
+$("copy").onclick=async()=>{try{await navigator.clipboard.writeText(finalText);$("copy").textContent="コピーしました"}catch(e){window.prompt("この文章をコピーしてください",finalText)}};
+</script>
+</body></html>
